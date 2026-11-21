@@ -274,7 +274,39 @@ npm test
 
 Además: registro con `role=admin`/`organizer` en el body → se crea `user`; cookie `HttpOnly` + `SameSite=Strict`; token alterado → 401; logout; admin edita evento ajeno; ids inválidos (400) e inexistentes (404); evento cancelado no editable (409); promoción de rol que aplica en el request siguiente sin re-login.
 
-### Evidencia contra el servidor real
+### Capturas
+
+Requests reales contra el servidor levantado con `npm run seed` (cookie de sesión de cada rol). Imágenes en [`docs/capturas/`](docs/capturas).
+
+#### `POST /api/events`: user (403) vs organizer (201)
+
+![POST /api/events con rol user → 403](docs/capturas/01-post-events-user-403.png)
+
+![POST /api/events con rol organizer → 201](docs/capturas/02-post-events-organizer-201.png)
+
+#### Ruta administrativa `GET /api/users`: organizer (403) vs admin (200)
+
+![GET /api/users con rol organizer → 403](docs/capturas/03-admin-route-organizer-403.png)
+
+![GET /api/users con rol admin → 200](docs/capturas/04-admin-route-admin-200.png)
+
+#### Rutas privadas sin cookie (401)
+
+![GET /api/sessions/current sin cookie → 401](docs/capturas/05-current-sin-cookie-401.png)
+
+![POST /api/events sin cookie → 401](docs/capturas/06-post-events-sin-cookie-401.png)
+
+#### Propiedad de recursos: organizer sobre evento ajeno (403) vs admin (200)
+
+![organizer modificando evento ajeno → 403](docs/capturas/07-organizer-evento-ajeno-403.png)
+
+![admin modificando evento ajeno → 200](docs/capturas/08-admin-evento-ajeno-200.png)
+
+#### Registro público: `role` del body ignorado
+
+![registro con role admin → se crea como user](docs/capturas/09-registro-role-ignorado-201.png)
+
+### Evidencia en texto
 
 Salida de `curl` con el servidor levantado y la base cargada con `npm run seed`:
 
@@ -289,7 +321,7 @@ PATCH /api/events/:eid    (organizer, evento ajeno) → 403  {"status":"error","
 PATCH /api/events/:eid    (admin, evento ajeno)     → 200  {"status":"success","payload":{...,"capacity":90}}
 ```
 
-Para reproducirlo a mano (o sacar capturas) está [`requests.http`](requests.http), listo para la extensión REST Client de VS Code.
+Para reproducirlo a mano está [`requests.http`](requests.http), listo para la extensión REST Client de VS Code.
 
 ---
 
@@ -322,6 +354,7 @@ src/
 ├── dto/                         # DTOs de salida (nunca exponen password)
 └── utils/                       # AppError, jwt, password, cookies, paginación
 scripts/seed.js                  # datos de prueba idempotentes
+docs/capturas/                   # evidencia de los casos 401/403/201/200
 test/                            # node:test + Supertest + mongodb-memory-server
 .github/workflows/ci.yml         # lint + formato + tests en cada push/PR
 ```
