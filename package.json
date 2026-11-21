@@ -1,0 +1,47 @@
+{
+  "name": "entrega-5-backend-2-coderhouse",
+  "version": "1.0.0",
+  "description": "Plataforma de Eventos e Inscripciones: autenticación con JWT en cookie y autorización por roles (user, organizer, admin).",
+  "main": "src/server.js",
+  "type": "module",
+  "engines": {
+    "node": ">=22.12"
+  },
+  "scripts": {
+    "start": "node --env-file-if-exists=.env src/server.js",
+    "dev": "node --watch --env-file-if-exists=.env src/server.js",
+    "seed": "node --env-file-if-exists=.env scripts/seed.js",
+    "test": "node --test --test-concurrency=1 \"test/**/*.test.js\"",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "keywords": [
+    "express",
+    "mongoose",
+    "jwt",
+    "rbac",
+    "authorization",
+    "coderhouse"
+  ],
+  "author": "Sebastián Felipe Muñoz Rivera",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "cookie-parser": "^1.4.7",
+    "express": "^5.3.0",
+    "express-rate-limit": "^8.7.5",
+    "helmet": "^8.3.0",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.12.3",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.15.0",
+    "globals": "^17.14.0",
+    "mongodb-memory-server": "^11.4.0",
+    "prettier": "^3.10.1",
+    "supertest": "^7.3.2"
+  }
+}
