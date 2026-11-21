@@ -1,0 +1,66 @@
+# Requests de prueba (extensión "REST Client" de VS Code o el cliente HTTP de JetBrains).
+# Antes: `npm run seed`. Cada login guarda la cookie de sesión en el cliente,
+# así que iniciá sesión con el rol que quieras probar y ejecutá las requests siguientes.
+
+@base = http://localhost:8080/api
+@password = {{$dotenv SEED_PASSWORD}}
+
+### Registro público (aunque se envíe role=admin, se crea como "user")
+POST {{base}}/sessions/register
+Content-Type: application/json
+
+{ "first_name": "Ana", "last_name": "Pérez", "email": "ana@test.com", "password": "Password123", "role": "admin" }
+
+### Login como user
+POST {{base}}/sessions/login
+Content-Type: application/json
+
+{ "email": "user@eventos.local", "password": "{{password}}" }
+
+### Login como organizer
+POST {{base}}/sessions/login
+Content-Type: application/json
+
+{ "email": "organizer@eventos.local", "password": "{{password}}" }
+
+### Login como admin
+POST {{base}}/sessions/login
+Content-Type: application/json
+
+{ "email": "admin@eventos.local", "password": "{{password}}" }
+
+### Usuario de la sesión actual (401 sin cookie)
+GET {{base}}/sessions/current
+
+### Crear evento (user → 403, organizer/admin → 201)
+POST {{base}}/events
+Content-Type: application/json
+
+{ "title": "Congreso Tech 2026", "location": "Buenos Aires", "startsAt": "2027-03-10T18:00:00Z", "capacity": 300 }
+
+### Catálogo público de eventos publicados
+GET {{base}}/events?page=1&limit=10
+
+### Mis eventos (organizer/admin)
+GET {{base}}/events/mine
+
+### Modificar evento (organizer dueño o admin; organizer ajeno → 403)
+PATCH {{base}}/events/REEMPLAZAR_ID
+Content-Type: application/json
+
+{ "capacity": 400 }
+
+### Cancelar evento (organizer dueño o admin)
+PATCH {{base}}/events/REEMPLAZAR_ID/cancel
+
+### Ruta administrativa: listar usuarios (organizer → 403, admin → 200)
+GET {{base}}/users?role=organizer
+
+### Ruta administrativa: cambiar rol
+PATCH {{base}}/users/REEMPLAZAR_ID/role
+Content-Type: application/json
+
+{ "role": "organizer" }
+
+### Logout
+POST {{base}}/sessions/logout
